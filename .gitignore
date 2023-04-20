@@ -1,0 +1,16 @@
+# presets.
+**/*.env
+**/*.htaccess
+**/env/
+**/.DS_Store
+**/*.zip
+**/*.doc
+**/*.docx
+**/*.ppt
+**/*.pptx
+**/*.out
+**/.vscode/
+**/*.pdf
+**/*.class
+**/node_modules/
+**/__pycache__/
