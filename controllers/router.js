@@ -7,7 +7,7 @@ export const router = new express.Router()
 
 import * as fs from 'fs/promises'
 import path from 'path'
-import {store} from './store.js'
+import {store} from '../models/store.js'
 
 async function read() {
     const data = await fs.readFile(path.join(store['__dirname'], '../models', 'states.json'), 'utf8')

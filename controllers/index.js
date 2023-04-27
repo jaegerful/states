@@ -11,7 +11,7 @@ const __dirname = dirname(normalized)
 
 /* store '__dirname' in a globally accessible object.  */
 
-import {store} from './store.js'
+import {store} from '../models/store.js'
 store['__dirname'] = __dirname
 
 /* import environment variables. */

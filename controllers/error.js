@@ -1,7 +1,7 @@
 /* handler for invalid routes */
 
 import path from 'path'
-import {store} from './store.js'
+import {store} from '../models/store.js'
 
 export function error(request, response) {
     response.status(404)
