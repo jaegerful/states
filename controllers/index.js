@@ -9,6 +9,11 @@ const url = import.meta.url
 const normalized = fileURLToPath(url)
 const __dirname = dirname(normalized)
 
+/* store '__dirname' in a globally accessible object.  */
+
+import {store} from './store.js'
+store['__dirname'] = __dirname
+
 /* import environment variables. */
 
 import {config} from 'dotenv'
@@ -30,32 +35,22 @@ mongoose.connect(process.env.dsn, {
     useNewUrlParser: true
 })
 
-/* middleware. */
-
-import {middleware} from './middleware.js'
-middleware(server, express, path, __dirname)
-
-/* invalid routes. */
-
-server.all('*', (request, response) => {
-    response.status(404)
-
-    if (request.accepts('html')) {
-        response.sendFile(path.join(__dirname, '../public', 'error.html'))
-        return
-    }
-
-    if (request.accepts('json')) {
-        response.send({'error': '404 Not Found'})
-        return
-    }
-
-    response.end()
-})
-
 /* start server once database connected. */
 
-mongoose.connection.once('connected', () => {
+mongoose.connection.once('connected', async () => {
+
+    /* middleware. */
+    
+    const {middleware} = await import('./middleware.js')
+    await middleware(server, express, path, store['__dirname'])
+
+    /* invalid routes. */
+
+    const {error} = await import('./error.js')
+    server.all('*', error)
+
+    /* start server. */
+
     console.log(`\ndatabase connection established.`)
 
     server.listen(port, () => {

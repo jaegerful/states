@@ -1,6 +1,6 @@
 /* setup middleware. */
 
-export function middleware(server, express, path, __dirname) {
+export async function middleware(server, express, path, __dirname) {
 
     /* parse json bodies. */
 
@@ -17,4 +17,9 @@ export function middleware(server, express, path, __dirname) {
 
     const handler = express.static(path.join(__dirname, '../public'))
     server.use(handler)
+
+    /* use router for '/states'. */
+
+    const {router} = await import('./router.js') /* use dynamic import to ensure store has '__dirname' set to corresponding path. */
+    server.use('/states', router)
 }
