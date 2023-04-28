@@ -102,7 +102,7 @@ router.all('/:state*', (request, response, next) => {
     }
 
     if (request[symbol] === undefined)
-        error(request, response, next)     
+        error(request, response)     
 })
 
 /* route: get data for a particular state. */
@@ -169,4 +169,42 @@ router.get('/:state/admission', (request, response) => {
         'state': state.state, 
         'admitted': state.admission_date
     })
+})
+
+/* route: insert fun fact(s) for a particular state. */
+
+router.post('/:state/funfact', async (request, response) => {
+
+    /* if body does not have 'funfacts' parameter. */
+
+    if (request.body.funfacts === undefined || !Array.isArray(request.body.funfacts)) {
+        error(request, response)
+        return
+    }
+    
+    /* check if state already has some fun facts stored in database. */
+
+    const {data: state} = request[symbol]
+    const document = await model.findOne({'stateCode': state.code}).exec()
+
+    let result
+
+    if (document) { /* if so, append fun facts from request. */
+        document.funFacts.push(...request.body.funfacts)
+        result = await document.save()
+    }
+
+    /* otherwise, create an entry for state. */
+
+    else {
+        result = await model.create({
+            'stateCode': state.code, 
+            'funFacts': request.body.funfacts
+        })
+    }
+    
+    /* send repsonse w/ result. */
+
+    response.status(201)
+    response.send(result)
 })
