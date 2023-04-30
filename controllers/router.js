@@ -175,10 +175,26 @@ router.get('/:state/admission', (request, response) => {
 
 router.post('/:state/funfact', async (request, response) => {
 
-    /* if body does not have 'funfacts' parameter. */
+    /* validate 'funfacts' parameter. */
 
-    if (request.body.funfacts === undefined || !Array.isArray(request.body.funfacts)) {
-        error(request, response)
+    const checks = {
+        'defined': request.body.funfacts !== undefined,
+        'is_array': Array.isArray(request.body.funfacts),
+        'is_array_of_only_strings': request.body.funfacts.every(funFact => typeof funFact === 'string')
+    }
+
+    if (!checks['defined']) {
+        response.send({'message': 'State fun facts value required'})
+        return
+    }
+
+    if (!checks['is_array']) {
+        response.send({'message': 'State fun facts value must be an array'})
+        return
+    }
+
+    if (!checks['is_array_of_only_strings']) {
+        response.send({'message': 'State fun facts array must only contain string elements'})
         return
     }
     
@@ -189,7 +205,7 @@ router.post('/:state/funfact', async (request, response) => {
 
     let result
 
-    if (document) { /* if so, append fun facts from request. */
+    if (document !== null) { /* if so, append fun facts from request. */
         document.funFacts.push(...request.body.funfacts)
         result = await document.save()
     }
@@ -206,5 +222,72 @@ router.post('/:state/funfact', async (request, response) => {
     /* send repsonse w/ result. */
 
     response.status(201)
+    response.send(result)
+})
+
+/* route: replace fun fact for a particular state. */
+
+router.patch('/:state/funfact', async (request, response) => {
+
+    /* check if state has some fun facts stored in database. */
+
+    const {data: state} = request[symbol]
+    const document = await model.findOne({'stateCode': state.code}).exec()
+
+    response.status(400)
+
+    /* validate 'index' and 'funfact' parameters. */
+
+    const checks = {
+        'index': {
+            'defined': request.body.index !== undefined,
+        },
+        'funfact': {
+            'defined': request.body.funfact !== undefined,
+            'is_string': typeof request.body.funfact === 'string'
+        }
+    }
+
+    if (!checks['index']['defined']) {
+        response.send({'message': 'State fun fact index value required'})
+        return
+    }
+
+    if (!checks['funfact']['defined']) {
+        response.send({'message': 'State fun fact value required'})
+        return
+    }
+
+    if (!checks['funfact']['is_string']) {
+        response.send({'message': 'State fun fact value must be a string'})
+        return
+    }
+
+    /* if state does not a single fun fact. */
+
+    response.status(404)
+
+    if (document === null) {
+        response.send({'message': `No Fun Facts found for ${state.state}`})
+        return
+    }
+
+    /* if 'index' parameter out of range. */
+
+    const index = request.body.index - 1
+
+    if (document.funFacts[index] === undefined) {
+        response.send({'message': 'No Fun Fact found at that index for Texas'})
+        return
+    }
+
+    /* replace fun fact with corresponding index. */
+
+    document.funFacts[index] = request.body.funfact
+    let result = await document.save()
+    
+    /* send repsonse w/ result. */
+
+    response.status(200)
     response.send(result)
 })
