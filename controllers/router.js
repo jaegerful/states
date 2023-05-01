@@ -218,8 +218,12 @@ router.post('/:state/funfact', async (request, response) => {
             'funFacts': request.body.funfacts
         })
     }
+
+    /* update store w/ new fun fact(s) for corresponding state. */
+
+    state.funFacts = result.funFacts
     
-    /* send repsonse w/ result. */
+    /* send response w/ result. */
 
     response.status(201)
     response.send(result)
@@ -267,7 +271,7 @@ router.patch('/:state/funfact', async (request, response) => {
 
     response.status(404)
 
-    if (document === null) {
+    if (document === null || document.funFacts.length === 0) {
         response.send({'message': `No Fun Facts found for ${state.state}`})
         return
     }
@@ -277,7 +281,7 @@ router.patch('/:state/funfact', async (request, response) => {
     const index = request.body.index - 1
 
     if (document.funFacts[index] === undefined) {
-        response.send({'message': 'No Fun Fact found at that index for Texas'})
+        response.send({'message': `No Fun Fact found at that index for ${state.state}`})
         return
     }
 
@@ -285,8 +289,67 @@ router.patch('/:state/funfact', async (request, response) => {
 
     document.funFacts[index] = request.body.funfact
     let result = await document.save()
+
+    /* update store w/ new fun fact for corresponding state. */
+
+    state.funFacts = result.funFacts
     
-    /* send repsonse w/ result. */
+    /* send response w/ result. */
+
+    response.status(200)
+    response.send(result)
+})
+
+/* route: remove fun fact for a particular state. */
+
+router.delete('/:state/funfact', async (request, response) => {
+
+    /* check if state has some fun facts stored in database. */
+
+    const {data: state} = request[symbol]
+    const document = await model.findOne({'stateCode': state.code}).exec()
+
+    response.status(400)
+
+    /* validate 'index' parameter. */
+
+    const checks = {
+        'defined': request.body.index !== undefined,
+    }
+
+    if (!checks['defined']) {
+        response.send({'message': 'State fun fact index value required'})
+        return
+    }
+
+    /* if state does not a single fun fact. */
+
+    response.status(404)
+
+    if (document === null || document.funFacts.length === 0) {
+        response.send({'message': `No Fun Facts found for ${state.state}`})
+        return
+    }
+
+    /* if index out of range. */
+
+    const index = request.body.index - 1
+
+    if (document.funFacts[index] === undefined) {
+        response.send({'message': `No Fun Fact found at that index for ${state.state}`})
+        return
+    }
+
+    /* replace fun fact with corresponding index. */
+
+    document.funFacts.splice(index, 1)
+    let result = await document.save()
+
+    /* update store w/ new fun fact for corresponding state. */
+
+    state.funFacts = result.funFacts
+    
+    /* send response w/ result. */
 
     response.status(200)
     response.send(result)
