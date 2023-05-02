@@ -24,7 +24,7 @@ config()
 import express from 'express'
 
 const server = express()
-const port = process.env.port ?? 1800
+const port = process.env.PORT ?? 1800
 
 /* connect to database. */
 
