@@ -1,6 +1,30 @@
 /* setup middleware. */
 
+import cors from 'cors'
+
 export async function middleware(server, express, path, __dirname) {
+
+    /* use cors. */
+
+    const whitelist = [process.env.local_address, process.env.address_for_tests]
+    
+    const options = {
+        origin: (origin, callback) => {
+    
+            /* if origin part of whitelist. */
+    
+            if (whitelist.includes(origin)) {
+                callback(null, true)
+                return
+            }
+    
+            /* otherwise. */
+
+            callback(new Error('origin not permitted.'))
+        }
+    }
+
+    server.use(cors(options))
 
     /* parse json bodies. */
 
