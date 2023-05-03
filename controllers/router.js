@@ -155,7 +155,7 @@ router.get('/:state/population', (request, response) => {
 
     response.send({
         'state': state.state, 
-        'population': state.population
+        'population': state.population.toLocaleString('en-US') /* insert commas. */
     })
 })
 
