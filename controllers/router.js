@@ -35,7 +35,7 @@ async function retrieve() {
         if (result === undefined)
             continue
 
-        state.funFacts = result
+        state.funfacts = result
     }
 }
 
@@ -117,14 +117,14 @@ router.get('/:state', (request, response) => {
 router.get('/:state/funfact', (request, response) => {
     const {data: state} = request[symbol]
 
-    if (state.funFacts === undefined) {
+    if (state.funfacts === undefined) {
         response.status(404)
         response.send({'message': `No Fun Facts found for ${state.state}`})
         return
     }
 
-    const index = Math.trunc(Math.random() * state.funFacts.length) /* select random index in array. */
-    response.send({'funfact': state.funFacts[index]})
+    const index = Math.trunc(Math.random() * state.funfacts.length) /* select random index in array. */
+    response.send({'funfact': state.funfacts[index]})
 })
 
 /* route: get the capital of a particular state. */
@@ -221,7 +221,7 @@ router.post('/:state/funfact', async (request, response) => {
 
     /* update store w/ new fun fact(s) for corresponding state. */
 
-    state.funFacts = result.funFacts
+    state.funfacts = result.funFacts
     
     /* send response w/ result. */
 
@@ -292,7 +292,7 @@ router.patch('/:state/funfact', async (request, response) => {
 
     /* update store w/ new fun fact for corresponding state. */
 
-    state.funFacts = result.funFacts
+    state.funfacts = result.funFacts
     
     /* send response w/ result. */
 
@@ -347,7 +347,7 @@ router.delete('/:state/funfact', async (request, response) => {
 
     /* update store w/ new fun fact for corresponding state. */
 
-    state.funFacts = result.funFacts
+    state.funfacts = result.funFacts
     
     /* send response w/ result. */
 
