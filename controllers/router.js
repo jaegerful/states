@@ -179,7 +179,7 @@ router.post('/:state/funfact', async (request, response) => {
     const checks = {
         'defined': request.body.funfacts !== undefined,
         'is_array': Array.isArray(request.body.funfacts),
-        'is_array_of_only_strings': request.body.funfacts.every(funFact => typeof funFact === 'string')
+        'is_array_of_only_strings': request.body.funfacts?.every(funFact => typeof funFact === 'string')
     }
 
     if (!checks['defined']) {
