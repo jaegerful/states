@@ -86,7 +86,6 @@ router.get('/', async (request, response) => {
 
 /* validate routes w/ ':state' url parameter. */
 
-import {error} from './error.js'
 const symbol = Symbol.for('state code exists')
 
 router.all('/:state*', (request, response, next) => {
@@ -102,7 +101,7 @@ router.all('/:state*', (request, response, next) => {
     }
 
     if (request[symbol] === undefined)
-        error(request, response)     
+        response.send({'message': 'Invalid state abbreviation parameter'}) 
 })
 
 /* route: get data for a particular state. */
