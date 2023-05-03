@@ -225,7 +225,7 @@ router.post('/:state/funfact', async (request, response) => {
     /* send response w/ result. */
 
     response.status(201)
-    response.send(result)
+    response.send(state)
 })
 
 /* route: replace fun fact for a particular state. */
