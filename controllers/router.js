@@ -24,8 +24,8 @@ async function retrieve() {
     const database = await model.find({})
     const map = {}
 
-    for (let document of database) /* make map w/ this structure: {stateCode: funFacts}. */
-        map[document.stateCode] = document.funFacts
+    for (let document of database) /* make map w/ this structure: {stateCode: funfacts}. */
+        map[document.stateCode] = document.funfacts
 
     /* add fun facts to corresponding states. */
 
@@ -205,7 +205,7 @@ router.post('/:state/funfact', async (request, response) => {
     let result
 
     if (document !== null) { /* if so, append fun facts from request. */
-        document.funFacts.push(...request.body.funfacts)
+        document.funfacts.push(...request.body.funfacts)
         result = await document.save()
     }
 
@@ -214,18 +214,18 @@ router.post('/:state/funfact', async (request, response) => {
     else {
         result = await model.create({
             'stateCode': state.code, 
-            'funFacts': request.body.funfacts
+            'funfacts': request.body.funfacts
         })
     }
 
     /* update store w/ new fun fact(s) for corresponding state. */
 
-    state.funfacts = result.funFacts
+    state.funfacts = result.funfacts
     
     /* send response w/ result. */
 
     response.status(201)
-    response.send(state)
+    response.send(result)
 })
 
 /* route: replace fun fact for a particular state. */
@@ -270,7 +270,7 @@ router.patch('/:state/funfact', async (request, response) => {
 
     response.status(404)
 
-    if (document === null || document.funFacts.length === 0) {
+    if (document === null || document.funfacts.length === 0) {
         response.send({'message': `No Fun Facts found for ${state.state}`})
         return
     }
@@ -279,19 +279,19 @@ router.patch('/:state/funfact', async (request, response) => {
 
     const index = request.body.index - 1
 
-    if (document.funFacts[index] === undefined) {
+    if (document.funfacts[index] === undefined) {
         response.send({'message': `No Fun Fact found at that index for ${state.state}`})
         return
     }
 
     /* replace fun fact with corresponding index. */
 
-    document.funFacts[index] = request.body.funfact
+    document.funfacts[index] = request.body.funfact
     let result = await document.save()
 
     /* update store w/ new fun fact for corresponding state. */
 
-    state.funfacts = result.funFacts
+    state.funfacts = result.funfacts
     
     /* send response w/ result. */
 
@@ -325,7 +325,7 @@ router.delete('/:state/funfact', async (request, response) => {
 
     response.status(404)
 
-    if (document === null || document.funFacts.length === 0) {
+    if (document === null || document.funfacts.length === 0) {
         response.send({'message': `No Fun Facts found for ${state.state}`})
         return
     }
@@ -334,19 +334,19 @@ router.delete('/:state/funfact', async (request, response) => {
 
     const index = request.body.index - 1
 
-    if (document.funFacts[index] === undefined) {
+    if (document.funfacts[index] === undefined) {
         response.send({'message': `No Fun Fact found at that index for ${state.state}`})
         return
     }
 
     /* replace fun fact with corresponding index. */
 
-    document.funFacts.splice(index, 1)
+    document.funfacts.splice(index, 1)
     let result = await document.save()
 
     /* update store w/ new fun fact for corresponding state. */
 
-    state.funfacts = result.funFacts
+    state.funfacts = result.funfacts
     
     /* send response w/ result. */
 

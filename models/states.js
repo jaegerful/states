@@ -16,7 +16,7 @@ const schema = new mongoose.Schema({
 
     /* fun facts about state. */
 
-    funFacts: {
+    funfacts: {
         type: [String]
     }
 })
